@@ -1,48 +1,344 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <meta name="theme-color" content="#f97316" />
-    <meta name="description" content="تابع كأس العالم 2026 - نتائج، مجموعات، هدافون، ولعبة التوقعات!" />
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#f97316"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="كأس العالم"/>
+<meta property="og:title" content="كأس العالم 2026 ⚽"/>
+<meta property="og:description" content="تابع النتائج وتوقع المباريات!"/>
+<title>كأس العالم 2026 ⚽</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#080c18;font-family:'Segoe UI',Tahoma,sans-serif;direction:rtl}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#0f172a}
+::-webkit-scrollbar-thumb{background:#334155;border-radius:2px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
 
-    <!-- PWA Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="كأس العالم" />
-    <meta name="mobile-web-app-capable" content="yes" />
+const MATCHES_DATA = [
+  { id:1, date:"11 يونيو", time:"21:00", team1:{name:"الأرجنتين",flag:"🇦🇷"}, team2:{name:"المغرب",flag:"🇲🇦"}, score1:3, score2:1, status:"انتهت", venue:"MetLife - نيوجيرسي" },
+  { id:2, date:"11 يونيو", time:"00:00", team1:{name:"إنجلترا",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"}, team2:{name:"فرنسا",flag:"🇫🇷"}, score1:1, score2:1, status:"انتهت", venue:"SoFi - لوس أنجلوس" },
+  { id:3, date:"12 يونيو", time:"21:00", team1:{name:"البرازيل",flag:"🇧🇷"}, team2:{name:"المكسيك",flag:"🇲🇽"}, score1:null, score2:null, status:"اليوم", venue:"AT&T - دالاس" },
+  { id:4, date:"12 يونيو", time:"00:00", team1:{name:"ألمانيا",flag:"🇩🇪"}, team2:{name:"اليابان",flag:"🇯🇵"}, score1:null, score2:null, status:"اليوم", venue:"MetLife - نيوجيرسي" },
+  { id:5, date:"13 يونيو", time:"21:00", team1:{name:"إسبانيا",flag:"🇪🇸"}, team2:{name:"البرتغال",flag:"🇵🇹"}, score1:null, score2:null, status:"قادمة", venue:"Azteca - مكسيكو" },
+  { id:6, date:"14 يونيو", time:"21:00", team1:{name:"أمريكا",flag:"🇺🇸"}, team2:{name:"هولندا",flag:"🇳🇱"}, score1:null, score2:null, status:"قادمة", venue:"Levi's - سان خوسيه" },
+];
 
-    <!-- Open Graph (للمشاركة على واتساب/انستغرام) -->
-    <meta property="og:title" content="كأس العالم 2026 🏆" />
-    <meta property="og:description" content="تابع النتائج وتوقع المباريات!" />
-    <meta property="og:type" content="website" />
+const GROUPS = [
+  {name:"A",teams:[{name:"المكسيك",flag:"🇲🇽",p:3,w:2,d:1,l:0,gf:5,ga:2,pts:7},{name:"البرازيل",flag:"🇧🇷",p:3,w:2,d:0,l:1,gf:4,ga:3,pts:6},{name:"بولندا",flag:"🇵🇱",p:3,w:1,d:0,l:2,gf:2,ga:4,pts:3},{name:"الكاميرون",flag:"🇨🇲",p:3,w:0,d:1,l:2,gf:1,ga:3,pts:1}]},
+  {name:"B",teams:[{name:"إنجلترا",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",p:3,w:2,d:1,l:0,gf:6,ga:2,pts:7},{name:"فرنسا",flag:"🇫🇷",p:3,w:2,d:0,l:1,gf:5,ga:2,pts:6},{name:"الدنمارك",flag:"🇩🇰",p:3,w:1,d:0,l:2,gf:2,ga:5,pts:3},{name:"تونس",flag:"🇹🇳",p:3,w:0,d:1,l:2,gf:1,ga:5,pts:1}]},
+  {name:"C",teams:[{name:"الأرجنتين",flag:"🇦🇷",p:3,w:3,d:0,l:0,gf:7,ga:1,pts:9},{name:"هولندا",flag:"🇳🇱",p:3,w:1,d:1,l:1,gf:4,ga:4,pts:4},{name:"المغرب",flag:"🇲🇦",p:3,w:1,d:1,l:1,gf:3,ga:3,pts:4},{name:"السعودية",flag:"🇸🇦",p:3,w:0,d:0,l:3,gf:1,ga:7,pts:0}]},
+  {name:"D",teams:[{name:"ألمانيا",flag:"🇩🇪",p:3,w:2,d:1,l:0,gf:8,ga:2,pts:7},{name:"اليابان",flag:"🇯🇵",p:3,w:2,d:0,l:1,gf:4,ga:4,pts:6},{name:"كرواتيا",flag:"🇭🇷",p:3,w:1,d:1,l:1,gf:4,ga:4,pts:4},{name:"كندا",flag:"🇨🇦",p:3,w:0,d:0,l:3,gf:1,ga:7,pts:0}]},
+];
 
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/icon-192.png" />
+const SCORERS = [
+  {name:"ليونيل ميسي",flag:"🇦🇷",goals:5,assists:3},
+  {name:"كيليان مبابي",flag:"🇫🇷",goals:4,assists:2},
+  {name:"فينيسيوس جونيور",flag:"🇧🇷",goals:3,assists:4},
+  {name:"هاري كين",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",goals:3,assists:1},
+  {name:"يامال",flag:"🇪🇸",goals:2,assists:5},
+];
 
-    <title>كأس العالم 2026 ⚽</title>
+const LEADERBOARD = [
+  {name:"أحمد 🇸🇦",pts:47,correct:8,exact:3},
+  {name:"سارة 🇯🇴",pts:41,correct:7,exact:2},
+  {name:"خالد 🇦🇪",pts:38,correct:6,exact:3},
+  {name:"نور 🇱🇧",pts:32,correct:5,exact:2},
+  {name:"ياسر 🇪🇬",pts:28,correct:5,exact:1},
+];
 
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { background: #080c18; }
-      /* Hide number input arrows */
-      input[type=number]::-webkit-inner-spin-button,
-      input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-      input[type=number] { -moz-appearance: textfield; }
-    </style>
-  </head>
-  <body>
-    <noscript>يرجى تفعيل JavaScript لتشغيل التطبيق.</noscript>
-    <div id="root"></div>
-    <script>
-      // Register Service Worker
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('SW registered'))
-            .catch(err => console.log('SW failed:', err));
-        });
-      }
-    </script>
-  </body>
+function App() {
+  const [screen, setScreen] = useState("dashboard");
+  const [toast, setToast] = useState(null);
+  const showToast = (msg) => { setToast(msg); setTimeout(()=>setToast(null),2800); };
+  return (
+    <div style={{minHeight:"100vh",background:"#080c18",color:"#e2e8f0",maxWidth:900,margin:"0 auto",display:"flex",flexDirection:"column"}}>
+      {toast && <div style={{position:"fixed",top:20,left:"50%",transform:"translateX(-50%)",background:"#1e293b",border:"1px solid #f97316",color:"#fff",padding:"12px 20px",borderRadius:12,fontSize:14,fontWeight:600,zIndex:999,boxShadow:"0 4px 24px #0008",whiteSpace:"nowrap"}}>{toast}</div>}
+      <div style={{flex:1,overflowY:"auto",paddingBottom:64}}>
+        {screen==="dashboard" ? <Dashboard/> : <PredictGame showToast={showToast}/>}
+      </div>
+      <nav style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:900,display:"flex",background:"#0f172a",borderTop:"2px solid #1f2937",zIndex:100}}>
+        {[["dashboard","📊","الداشبورد"],["predict","🎮","التوقعات"]].map(([k,icon,lbl])=>(
+          <button key={k} onClick={()=>setScreen(k)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:"10px 4px",background:"none",border:"none",borderTop:screen===k?"3px solid #f97316":"3px solid transparent",color:screen===k?"#f97316":"#475569",cursor:"pointer",fontSize:12,fontWeight:screen===k?700:400}}>
+            <span style={{fontSize:20}}>{icon}</span><span>{lbl}</span>
+          </button>
+        ))}
+      </nav>
+    </div>
+  );
+}
+
+function Dashboard() {
+  const [tab,setTab]=useState("home");
+  const [group,setGroup]=useState("A");
+  const [ticker,setTicker]=useState(0);
+  useEffect(()=>{const id=setInterval(()=>setTicker(t=>(t+1)%MATCHES_DATA.length),3500);return()=>clearInterval(id);},[]);
+  const m=MATCHES_DATA[ticker];
+  return (
+    <div style={{background:"#0a0e1a",minHeight:"100vh"}}>
+      <header style={{background:"linear-gradient(135deg,#1a1f35,#0f172a)",borderBottom:"2px solid #f97316",padding:"16px 20px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <span style={{fontSize:34}}>⚽</span>
+            <div><div style={{fontSize:19,fontWeight:900,color:"#fff",letterSpacing:2}}>FIFA WORLD CUP</div><div style={{fontSize:10,color:"#f97316",letterSpacing:1,marginTop:2}}>USA · CANADA · MEXICO 2026</div></div>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:6,background:"#dc2626",color:"#fff",padding:"4px 12px",borderRadius:20,fontSize:13,fontWeight:700}}>
+            <span style={{width:7,height:7,borderRadius:"50%",background:"#fff",display:"inline-block"}}/>LIVE
+          </div>
+        </div>
+      </header>
+      <div style={{background:"#111827",borderBottom:"1px solid #1f2937",padding:"8px 14px",display:"flex",gap:10,alignItems:"center",fontSize:12,overflow:"hidden",whiteSpace:"nowrap"}}>
+        <span style={{background:"#f97316",color:"#fff",padding:"2px 7px",borderRadius:4,fontSize:10,fontWeight:700,flexShrink:0}}>⚡ لايف</span>
+        <span style={{color:"#94a3b8"}}>{m.team1.flag} {m.team1.name} {m.score1!=null?`${m.score1}-${m.score2}`:"vs"} {m.team2.name} {m.team2.flag} · {m.venue}</span>
+      </div>
+      <div style={{display:"flex",justifyContent:"space-around",padding:"12px 16px",background:"#111827",borderBottom:"1px solid #1f2937"}}>
+        {[["⚽","22","مباراة"],["🥅","71","هدف"],["🌍","48","منتخب"],["🏟️","16","ملعب"]].map(([icon,val,lbl])=>(
+          <div key={lbl} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1}}>
+            <span style={{fontSize:18}}>{icon}</span><span style={{fontSize:20,fontWeight:900,color:"#f97316"}}>{val}</span><span style={{fontSize:10,color:"#64748b"}}>{lbl}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{display:"flex",background:"#0f172a",borderBottom:"1px solid #1f2937"}}>
+        {[["home","🏠","الرئيسية"],["matches","📅","المباريات"],["groups","📊","المجموعات"],["scorers","🥇","الهدافون"]].map(([k,icon,lbl])=>(
+          <button key={k} onClick={()=>setTab(k)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:"10px 4px",background:"none",border:"none",borderBottom:tab===k?"3px solid #f97316":"3px solid transparent",color:tab===k?"#f97316":"#64748b",cursor:"pointer",fontSize:11,fontWeight:tab===k?700:400}}>
+            <span>{icon}</span><span>{lbl}</span>
+          </button>
+        ))}
+      </div>
+      <main style={{padding:14}}>
+        {tab==="home" && (
+          <div style={{display:"flex",flexDirection:"column",gap:12}}>
+            <div style={{background:"linear-gradient(135deg,#1e293b,#0f172a)",border:"1px solid #1f2937",borderTop:"3px solid #f97316",borderRadius:12,padding:18}}>
+              <div style={{fontSize:12,color:"#f97316",marginBottom:14,fontWeight:700}}>🔥 أبرز مباراة اليوم</div>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:5}}><span style={{fontSize:44}}>🇧🇷</span><span style={{fontSize:14,fontWeight:700,color:"#fff"}}>البرازيل</span></div>
+                <div style={{textAlign:"center"}}><div style={{fontSize:12,color:"#94a3b8"}}>21:00</div><div style={{fontSize:26,fontWeight:900,color:"#f97316"}}>VS</div><div style={{fontSize:10,color:"#64748b"}}>AT&T Stadium</div></div>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:5}}><span style={{fontSize:44}}>🇲🇽</span><span style={{fontSize:14,fontWeight:700,color:"#fff"}}>المكسيك</span></div>
+              </div>
+            </div>
+            <div style={{background:"#111827",border:"1px solid #1f2937",borderRadius:12,padding:14}}>
+              <div style={{fontSize:13,fontWeight:700,color:"#f97316",marginBottom:11}}>🥇 الهداف الأول</div>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <span style={{fontSize:40}}>{SCORERS[0].flag}</span>
+                <div><div style={{fontSize:15,fontWeight:700,color:"#fff",marginBottom:5}}>{SCORERS[0].name}</div>
+                <div style={{display:"flex",gap:7}}>
+                  <span style={{background:"#f9731622",color:"#f97316",padding:"2px 8px",borderRadius:12,fontSize:11,fontWeight:700,border:"1px solid #f9731444"}}>{SCORERS[0].goals} أهداف</span>
+                  <span style={{background:"#60a5fa22",color:"#60a5fa",padding:"2px 8px",borderRadius:12,fontSize:11,fontWeight:700,border:"1px solid #60a5fa44"}}>{SCORERS[0].assists} تمريرات</span>
+                </div></div>
+              </div>
+            </div>
+            <div style={{background:"#111827",border:"1px solid #1f2937",borderRadius:12,padding:14}}>
+              <div style={{fontSize:13,fontWeight:700,color:"#f97316",marginBottom:11}}>🏆 صدارة المجموعات</div>
+              {GROUPS.map(g=>(
+                <div key={g.name} style={{display:"flex",alignItems:"center",gap:9,padding:"8px 0",borderBottom:"1px solid #1f2937"}}>
+                  <span style={{background:"#1f2937",padding:"2px 7px",borderRadius:6,fontSize:10,color:"#94a3b8",minWidth:85}}>المجموعة {g.name}</span>
+                  <span style={{fontSize:18}}>{g.teams[0].flag}</span>
+                  <span style={{flex:1,fontSize:13}}>{g.teams[0].name}</span>
+                  <span style={{fontSize:13,fontWeight:800,color:"#f97316"}}>{g.teams[0].pts} ن</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {tab==="matches" && (
+          <div>
+            {MATCHES_DATA.map(m=>(
+              <div key={m.id} style={{background:"#111827",borderRadius:10,padding:"13px 14px",marginBottom:9,borderRight:`4px solid ${m.status==="انتهت"?"#4ade80":m.status==="اليوم"?"#f97316":"#60a5fa"}`}}>
+                <span style={{fontSize:11,fontWeight:700,color:m.status==="انتهت"?"#4ade80":m.status==="اليوم"?"#f97316":"#60a5fa",marginBottom:6,display:"block"}}>{m.status}</span>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:6}}>
+                  <span style={{fontSize:13,fontWeight:600,flex:1}}>{m.team1.flag} {m.team1.name}</span>
+                  <span style={{fontSize:18,fontWeight:900,color:"#fff",background:"#1f2937",padding:"4px 12px",borderRadius:8}}>{m.score1!=null?`${m.score1}-${m.score2}`:m.time}</span>
+                  <span style={{fontSize:13,fontWeight:600,flex:1,textAlign:"left"}}>{m.team2.name} {m.team2.flag}</span>
+                </div>
+                <div style={{fontSize:10,color:"#64748b",marginTop:6}}>🏟 {m.venue}</div>
+              </div>
+            ))}
+          </div>
+        )}
+        {tab==="groups" && (
+          <div>
+            <div style={{display:"flex",gap:7,marginBottom:12,flexWrap:"wrap"}}>
+              {GROUPS.map(g=>(
+                <button key={g.name} onClick={()=>setGroup(g.name)} style={{padding:"7px 14px",borderRadius:8,border:group===g.name?"1px solid #f97316":"1px solid #1f2937",background:group===g.name?"#f9731622":"#111827",color:group===g.name?"#f97316":"#64748b",cursor:"pointer",fontSize:12,fontWeight:group===g.name?700:400}}>المجموعة {g.name}</button>
+              ))}
+            </div>
+            {GROUPS.filter(g=>g.name===group).map(gr=>(
+              <div key={gr.name} style={{overflowX:"auto"}}>
+                <table style={{width:"100%",borderCollapse:"collapse"}}>
+                  <thead><tr>{["المنتخب","ل","ف","ت","خ","له","عليه","ن"].map(h=><th key={h} style={{padding:"9px 7px",textAlign:"center",fontSize:11,color:"#64748b",background:"#111827",borderBottom:"1px solid #1f2937"}}>{h}</th>)}</tr></thead>
+                  <tbody>
+                    {gr.teams.map((t,i)=>(
+                      <tr key={t.name} style={{borderBottom:"1px solid #1f2937",background:i<2?"#0d1b2a":"transparent"}}>
+                        <td style={{padding:"10px 8px",display:"flex",alignItems:"center",gap:6,fontSize:13}}>{t.flag} {t.name} {i<2&&<span style={{background:"#4ade8022",color:"#4ade80",padding:"1px 5px",borderRadius:10,fontSize:9}}>✓</span>}</td>
+                        {[t.p,t.w,t.d,t.l,t.gf,t.ga].map((v,j)=><td key={j} style={{padding:"9px 7px",textAlign:"center",fontSize:12}}>{v}</td>)}
+                        <td style={{padding:"9px 7px",textAlign:"center",fontSize:12,fontWeight:800,color:"#f97316"}}>{t.pts}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+          </div>
+        )}
+        {tab==="scorers" && (
+          <div>
+            {SCORERS.map((p,i)=>(
+              <div key={p.name} style={{display:"flex",alignItems:"center",gap:11,background:"#111827",borderRadius:10,padding:13,marginBottom:9}}>
+                <div style={{width:30,height:30,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:13,background:i===0?"#f59e0b":i===1?"#94a3b8":i===2?"#b45309":"#1f2937",color:i<3?"#fff":"#64748b",flexShrink:0}}>{i+1}</div>
+                <span style={{fontSize:28}}>{p.flag}</span>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:14,fontWeight:700,color:"#fff",marginBottom:5}}>{p.name}</div>
+                  <div style={{height:4,background:"#1f2937",borderRadius:4}}><div style={{height:"100%",width:`${(p.goals/5)*100}%`,background:"#f97316",borderRadius:4}}/></div>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                  <span style={{background:"#f9731622",color:"#f97316",padding:"2px 8px",borderRadius:12,fontSize:11,fontWeight:700,border:"1px solid #f9731444"}}>{p.goals} ⚽</span>
+                  <span style={{background:"#60a5fa22",color:"#60a5fa",padding:"2px 8px",borderRadius:12,fontSize:11,fontWeight:700,border:"1px solid #60a5fa44"}}>{p.assists} 🎯</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+function PredictGame({showToast}) {
+  const [tab,setTab]=useState("predict");
+  const [scores,setScores]=useState({});
+  const [picks,setPicks]=useState({});
+  const [submitted,setSubmitted]=useState({});
+  const setScore=(id,side,val)=>{const n=Math.max(0,Math.min(9,parseInt(val)||0));setScores(s=>({...s,[`${id}-${side}`]:n}));};
+  const submit=(id)=>{
+    const g1=scores[`${id}-1`];const g2=scores[`${id}-2`];const pick=picks[id];
+    const match=MATCHES_DATA.find(m=>m.id===id);
+    if(g1==null||g2==null||!pick){showToast("⚠️ اختر النتيجة والفائز أولاً");return;}
+    setSubmitted(s=>({...s,[id]:{g1,g2,pick}}));
+    showToast(`✅ محفوظ! ${match.team1.flag} ${g1} - ${g2} ${match.team2.flag}`);
+  };
+  const count=Object.keys(submitted).length;
+  const pts=count*5;
+  return (
+    <div style={{background:"#080c18",minHeight:"100vh"}}>
+      <header style={{background:"linear-gradient(160deg,#0f1e3d,#0a0c18)",borderBottom:"2px solid #f97316",padding:"16px 18px 13px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:13}}>
+          <div style={{display:"flex",alignItems:"center",gap:11}}>
+            <span style={{fontSize:32}}>🎮</span>
+            <div><div style={{fontSize:18,fontWeight:900,color:"#fff",letterSpacing:1}}>لعبة التوقعات</div><div style={{fontSize:9,color:"#f97316",letterSpacing:2,marginTop:2}}>WORLD CUP 2026 · PREDICTOR</div></div>
+          </div>
+          <div style={{background:"#f9731622",border:"2px solid #f97316",borderRadius:11,padding:"7px 16px",textAlign:"center"}}>
+            <div style={{fontSize:24,fontWeight:900,color:"#f97316",lineHeight:1}}>{pts}</div>
+            <div style={{fontSize:9,color:"#f97316",marginTop:2}}>نقطة</div>
+          </div>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:9}}>
+          <span style={{fontSize:11,color:"#64748b",minWidth:88}}>{count}/{MATCHES_DATA.length} توقعات</span>
+          <div style={{flex:1,height:5,background:"#1f2937",borderRadius:3,overflow:"hidden"}}>
+            <div style={{height:"100%",width:`${(count/MATCHES_DATA.length)*100}%`,background:"linear-gradient(90deg,#f97316,#fbbf24)",borderRadius:3,transition:"width 0.5s"}}/>
+          </div>
+        </div>
+      </header>
+      <div style={{display:"flex",background:"#0f172a",borderBottom:"1px solid #1f2937"}}>
+        {[["predict","🎮 توقعاتي"],["leaderboard","🏆 المتصدرين"],["rules","📋 القواعد"]].map(([k,lbl])=>(
+          <button key={k} onClick={()=>setTab(k)} style={{flex:1,padding:"11px 4px",background:"none",border:"none",borderBottom:tab===k?"3px solid #f97316":"3px solid transparent",color:tab===k?"#f97316":"#64748b",cursor:"pointer",fontSize:12,fontWeight:tab===k?700:400}}>{lbl}</button>
+        ))}
+      </div>
+      <main style={{padding:"14px 13px"}}>
+        {tab==="predict" && MATCHES_DATA.map(match=>{
+          const done=!!submitted[match.id];const sub=submitted[match.id];
+          const g1=scores[`${match.id}-1`]??"";const g2=scores[`${match.id}-2`]??"";
+          const pick=picks[match.id];
+          return (
+            <div key={match.id} style={{background:"#111827",border:"1px solid #1f2937",borderRadius:13,padding:15,marginBottom:13,borderTop:done?"3px solid #4ade80":"3px solid #1f2937"}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:11}}>
+                <span style={{fontSize:10,color:"#60a5fa"}}>📅 {match.date} · {match.time}</span>
+                <span style={{fontSize:10,color:"#64748b"}}>🏟 {match.venue}</span>
+              </div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:13,gap:6}}>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,flex:1}}>
+                  <span style={{fontSize:34}}>{match.team1.flag}</span>
+                  <span style={{fontSize:12,fontWeight:700,color:"#fff",textAlign:"center"}}>{match.team1.name}</span>
+                </div>
+                <div style={{display:"flex",alignItems:"center",gap:7}}>
+                  {done
+                    ? <><span style={{width:50,height:50,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,fontWeight:900,color:"#4ade80",background:"#14532d22",border:"2px solid #4ade8044",borderRadius:9}}>{sub.g1}</span><span style={{fontSize:20,fontWeight:900,color:"#475569"}}>-</span><span style={{width:50,height:50,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,fontWeight:900,color:"#4ade80",background:"#14532d22",border:"2px solid #4ade8044",borderRadius:9}}>{sub.g2}</span></>
+                    : <><input type="number" min="0" max="9" value={g1} onChange={e=>setScore(match.id,1,e.target.value)} placeholder="0" style={{width:50,height:50,textAlign:"center",fontSize:22,fontWeight:900,background:"#1e293b",border:"2px solid #334155",borderRadius:9,color:"#f97316",outline:"none"}}/><span style={{fontSize:20,fontWeight:900,color:"#475569"}}>-</span><input type="number" min="0" max="9" value={g2} onChange={e=>setScore(match.id,2,e.target.value)} placeholder="0" style={{width:50,height:50,textAlign:"center",fontSize:22,fontWeight:900,background:"#1e293b",border:"2px solid #334155",borderRadius:9,color:"#f97316",outline:"none"}}/></>
+                  }
+                </div>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,flex:1}}>
+                  <span style={{fontSize:34}}>{match.team2.flag}</span>
+                  <span style={{fontSize:12,fontWeight:700,color:"#fff",textAlign:"center"}}>{match.team2.name}</span>
+                </div>
+              </div>
+              {!done ? (
+                <>
+                  <div style={{fontSize:11,color:"#64748b",marginBottom:7}}>من سيفوز؟</div>
+                  <div style={{display:"flex",gap:7,marginBottom:11}}>
+                    {[["team1",`${match.team1.flag} ${match.team1.name}`],["draw","🤝 تعادل"],["team2",`${match.team2.flag} ${match.team2.name}`]].map(([k,lbl])=>(
+                      <button key={k} onClick={()=>setPicks(s=>({...s,[match.id]:k}))} style={{flex:1,padding:"8px 3px",background:pick===k?"#f9731622":"#1e293b",border:pick===k?"1px solid #f97316":"1px solid #334155",borderRadius:8,color:pick===k?"#f97316":"#94a3b8",cursor:"pointer",fontSize:11,fontWeight:pick===k?700:600}}>{lbl}</button>
+                    ))}
+                  </div>
+                  <button onClick={()=>submit(match.id)} style={{width:"100%",padding:"11px",background:"linear-gradient(90deg,#f97316,#ea580c)",border:"none",borderRadius:9,color:"#fff",fontSize:13,fontWeight:800,cursor:"pointer"}}>حفظ التوقع ⚡</button>
+                </>
+              ) : (
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <span style={{background:"#14532d33",color:"#4ade80",padding:"5px 11px",borderRadius:20,fontSize:11,fontWeight:700}}>✅ محفوظ</span>
+                  <span style={{fontSize:11,color:"#94a3b8"}}>{sub.pick==="draw"?"🤝 تعادل":sub.pick==="team1"?`${match.team1.flag} ${match.team1.name}`:`${match.team2.flag} ${match.team2.name}`}</span>
+                </div>
+              )}
+            </div>
+          );
+        })}
+        {tab==="leaderboard" && (
+          <div>
+            <div style={{fontSize:15,fontWeight:800,color:"#fff",marginBottom:13}}>🏆 لوحة المتصدرين</div>
+            <div style={{background:"linear-gradient(135deg,#1e1b4b,#0f172a)",border:"2px solid #6366f1",borderRadius:11,padding:"13px 15px",display:"flex",alignItems:"center",gap:11,marginBottom:8}}>
+              <span style={{fontSize:22,fontWeight:900,color:"#6366f1",minWidth:36}}>#6</span>
+              <div style={{flex:1}}><div style={{fontSize:15,fontWeight:700,color:"#fff"}}>أنت 👤</div><div style={{fontSize:11,color:"#94a3b8"}}>{count} توقعات مسجلة</div></div>
+              <div style={{textAlign:"center"}}><div style={{fontSize:24,fontWeight:900,color:"#6366f1"}}>{pts}</div><div style={{fontSize:10,color:"#6366f1"}}>نقطة</div></div>
+            </div>
+            <div style={{height:1,background:"#1f2937",margin:"10px 0"}}/>
+            {LEADERBOARD.map((lp,i)=>(
+              <div key={lp.name} style={{display:"flex",alignItems:"center",gap:11,padding:11,background:"#111827",borderRadius:9,marginBottom:8}}>
+                <span style={{fontSize:i<3?22:14,fontWeight:800,color:i<3?"#fff":"#64748b",minWidth:36,textAlign:"center"}}>{i===0?"🥇":i===1?"🥈":i===2?"🥉":`#${i+1}`}</span>
+                <div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:"#fff"}}>{lp.name}</div><div style={{fontSize:11,color:"#64748b"}}>{lp.correct} صح · {lp.exact} دقيقة</div></div>
+                <div style={{fontSize:20,fontWeight:900,color:"#f97316"}}>{lp.pts}<span style={{fontSize:12}}> ن</span></div>
+              </div>
+            ))}
+          </div>
+        )}
+        {tab==="rules" && (
+          <div style={{background:"#111827",border:"1px solid #1f2937",borderRadius:11,padding:16}}>
+            <p style={{fontSize:14,color:"#94a3b8",marginBottom:16}}>توقع نتائج المباريات واجمع أكبر عدد من النقاط!</p>
+            {[["توقعت الفائز ✅","+5 نقاط"],["توقعت النتيجة بالضبط 🎯","+10 نقاط"],["توقعت التعادل ✅","+5 نقاط"]].map(([lbl,p])=>(
+              <div key={lbl} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 13px",background:"#1e293b",borderRadius:7,marginBottom:8}}>
+                <span style={{fontSize:13}}>{lbl}</span><span style={{fontSize:13,fontWeight:800,color:"#f97316"}}>{p}</span>
+              </div>
+            ))}
+            <div style={{background:"#f9731611",border:"1px solid #f9731633",borderRadius:7,padding:"9px 13px",fontSize:12,color:"#fbd38d",marginBottom:8}}>💡 توقع النتيجة بالضبط لتحصل على أعلى نقاط!</div>
+            <div style={{background:"#60a5fa11",border:"1px solid #60a5fa33",borderRadius:7,padding:"9px 13px",fontSize:12,color:"#93c5fd"}}>⏰ يجب تسجيل التوقع قبل المباراة بـ 15 دقيقة</div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
 </html>
