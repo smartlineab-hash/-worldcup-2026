@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#f97316" />
+    <meta name="description" content="تابع كأس العالم 2026 - نتائج، مجموعات، هدافون، ولعبة التوقعات!" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="كأس العالم" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Open Graph (للمشاركة على واتساب/انستغرام) -->
+    <meta property="og:title" content="كأس العالم 2026 🏆" />
+    <meta property="og:description" content="تابع النتائج وتوقع المباريات!" />
+    <meta property="og:type" content="website" />
+
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/icon-192.png" />
+
+    <title>كأس العالم 2026 ⚽</title>
+
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { background: #080c18; }
+      /* Hide number input arrows */
+      input[type=number]::-webkit-inner-spin-button,
+      input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+      input[type=number] { -moz-appearance: textfield; }
+    </style>
+  </head>
+  <body>
+    <noscript>يرجى تفعيل JavaScript لتشغيل التطبيق.</noscript>
+    <div id="root"></div>
+    <script>
+      // Register Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered'))
+            .catch(err => console.log('SW failed:', err));
+        });
+      }
+    </script>
+  </body>
+</html>

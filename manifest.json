@@ -1,0 +1,27 @@
+{
+  "short_name": "كأس العالم",
+  "name": "كأس العالم 2026 ⚽",
+  "description": "تابع النتائج، المجموعات، الهدافين، ولعبة التوقعات!",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080c18",
+  "theme_color": "#f97316",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["sports", "entertainment"]
+}
